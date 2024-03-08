@@ -1,0 +1,17 @@
+.idea/
+*volume
+*cache
+*patch
+
+core/.env.local
+core/.env.local.php
+core/.env.*.local
+core/config/secrets/prod/prod.decrypt.private.php
+core/public/bundles/
+core/var/
+core/vendor/
+
+core/phpunit.xml
+core/.phpunit.result.cache
+
+*.hmm.php

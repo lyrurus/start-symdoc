@@ -1,0 +1,34 @@
+name: Code Fixer & Tests
+
+on: [push]
+
+jobs:
+  docker-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 1) Build and Up
+        run: docker-compose up -d --build
+      - name: 2) Containers List
+        run: docker-compose ps
+      - name: 3) Sleep
+        run: sleep 30
+        shell: bash
+      - name: 4) Healthy Containers
+        run: docker-compose ps
+      - name: 5) Composer Validate
+        run: docker-compose exec -T core bash -c "composer validate --no-check-publish"
+      - name: 6) Folders List
+        run: docker-compose exec -T core bash -c "ls -ltr"
+      - name: 7) Change Owner
+        run: docker-compose exec -T core bash -c "sudo chown -R 1000:1000 /var/www/html"
+      - name: 8) Composer Install
+        run: docker-compose exec -T core bash -c "composer install --prefer-dist"
+      - name: 9) Run Fixer
+        run: docker-compose exec -T core bash -c "composer fix-diff"
+      - name: 10) Run Static Analysis
+        run: docker-compose exec -T core bash -c "composer stan"
+      - name: 11) Run Tests
+        run: docker-compose exec -T core bash -c "composer test"
+      - name: 12) Check Database
+        run: docker-compose exec -T core bash -c "bin/console doctrine:query:sql 'select id, line from app.poem'"
